@@ -18,17 +18,16 @@ import PIL
     #Define Fonts for Label/Button letters
 labelFont = ('Comic Sans MS', 20, 'bold')
 buttonFont = ('Botthanie', 15, 'bold')
-    #Define total tracker value
-total = 0
 
     #Super Class for frames, Defines Container for frames and defines methods for button outputs
 class BriansGUI(tk.Tk):
+
     def __init__(self, *args):
         tk.Tk.__init__(self, *args)
         self.geometry("400x700")
         self.title("Brian's Pizza")
         self.configure(bg = 'medium sea green')
-
+        
             #Container for frames
         container = tk.Frame(self)
         container.pack(side = "top", fill = "both", expand = True)
@@ -44,7 +43,7 @@ class BriansGUI(tk.Tk):
         
             #Tuple that consists of the frames displayed in the GUI
             #(Add class to this list anytime a new frame is created and implemented into GUI)    
-        for F in (startPage, menuPage, payWindow):
+        for F in (startPage, menuPage, wingMenu, pizzaMenu, payWindow):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row = 0, column = 0, sticky = "nsew")
@@ -72,13 +71,7 @@ class BriansGUI(tk.Tk):
             if frame.winfo_viewable():
                 return cont
         return
-    def clearSubtotal(self, event):
-        self.subtotalLabel.config(text="")
 
-    def addSubtotal(self, event):
-        self.total += price
-
-    
     #Default starting page for the app, initiated when program is ran
 class startPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -104,7 +97,7 @@ class startPage(tk.Frame):
         label.place(x = 100, y = 0)
 
             #Button for navigating to menuPage
-        menuButton = ttk.Button(self, text="Main Menu", command= lambda : controller.showFrame(payWindow))
+        menuButton = ttk.Button(self, text="Main Menu", command= lambda : controller.showFrame(menuPage))
         menuButton.place(x=150, y=600)
 
             #Button for quitting the app
@@ -115,7 +108,6 @@ class startPage(tk.Frame):
 class menuPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-
             #Color of windown and labels
         self.configure(bg="medium sea green")
         style = ttk.Style()
@@ -134,6 +126,44 @@ class menuPage(tk.Frame):
         wingsButton.place(x=250, y=600)
 
             #Button to navigate to previous window
+        backButton = ttk.Button(self, text="Back", command = lambda : controller.back())
+        backButton.place(x=150, y=650)
+
+class wingMenu(tk.Frame):
+    def __init__(self, parent, controller):
+            #Color of window and frame
+        tk.Frame.__init__(self, parent)
+        self.configure(bg="medium sea green")
+        style = ttk.Style()
+        style.configure("Style.Label", background = "medium sea green")
+        label = ttk.Label(self, text="Wings", font=labelFont, style="Style.Label")
+        label.place(x=150, y=0)
+
+        bbqButton = ttk.Button(self, text="Honey BBQ ($5.00)", command = lambda : controller.showFrame(payWindow))
+        bbqButton.place(x=50, y=600)
+
+        buffaloButton = ttk.Button(self, text="Buffalo ($4.50)", command = lambda : controller.showFrame(payWindow))
+        buffaloButton.place(x=250, y=600)
+
+        backButton = ttk.Button(self, text="Back", command = lambda : controller.back())
+        backButton.place(x=150, y=650)
+
+class pizzaMenu(tk.Frame):
+    def __init__(self, parent, controller):
+            #Color of window and frame
+        tk.Frame.__init__(self, parent)
+        self.configure(bg="medium sea green")
+        style = ttk.Style()
+        style.configure("Style.Label", background = "medium sea green")
+        label = ttk.Label(self, text="Pizza", font=labelFont, style="Style.Label")
+        label.place(x=150, y=0)
+
+        cheeseButton = ttk.Button(self, text="Cheese ($7.50)", command = lambda : controller.showFrame(payWindow))
+        cheeseButton.place(x=50, y=600)
+
+        pepperoniButton = ttk.Button(self, text="Pepperoni ($8.50)", command = lambda : controller.showFrame(payWindow))
+        pepperoniButton.place(x=250, y=600)
+
         backButton = ttk.Button(self, text="Back", command = lambda : controller.back())
         backButton.place(x=150, y=650)
 
@@ -200,9 +230,6 @@ class payWindow(tk.Frame):
 
     def clearMessage(self, event):
         self.messageLabel.config(text="")
-    
-    def clearMessage(self, event):
-        self.messageLabel.config(text="")  # Clear the message label
 
     def pay(self):
         customerName = self.nameEntry.get().strip()
@@ -211,7 +238,7 @@ class payWindow(tk.Frame):
             self.messageLabel.config(text="Error: Name on card cannot be empty.")
             return
         if not re.match(r"^[A-Za-z\s]+$", customerName):
-            self.messageLabel.config(text="Error: Name can only contain letters and spaces.")
+            self.messageLabel.config(text="Error: Name can only contain letters and \n spaces.")
             return
 
         card_number = self.cardEntry.get().replace(" ", "").strip()
